@@ -54,7 +54,7 @@ RUN set -xe \
           && mv consoles /usr/share/prometheus/ \
           && mv console_libraries /usr/share/prometheus/ \
           && mv NOTICE LICENSE /usr/share/prometheus/ \
-          && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ \
+          && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ ) \
         && rm -rf $PROMETHEUS_TOP \
         && apk add --virtual .os-rundeps tzdata \
         && chmod +x /bin/prometheus \
