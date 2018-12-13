@@ -1,0 +1,79 @@
+ARG BUILD_FROM
+ARG OS
+
+FROM $BUILD_FROM
+
+# Define ARGs again to make them available after FROM
+ARG BUILD_DATE
+ARG BUILD_VERSION
+ARG BUILD_REF
+ARG OS
+ARG ARCH
+ARG QEMU_ARCH
+ARG OTP_VERSION
+ARG EMQX_VERSION
+
+# Basic build-time metadata as defined at http://label-schema.org
+LABEL org.label-schema.build-date=${BUILD_DATE} \
+    org.label-schema.docker.dockerfile=".docker/Dockerfile.alpine-tmpl" \
+    org.label-schema.license="GNU" \
+    org.label-schema.name="prometheus" \
+    org.label-schema.version=${BUILD_VERSION} \
+    org.label-schema.description="An open-source systems monitoring and alerting toolkit." \
+    org.label-schema.url="https://prometheus.io" \
+    org.label-schema.vcs-ref=${BUILD_REF} \
+    org.label-schema.vcs-type="Git" \
+    org.label-schema.vcs-url="https://github.com/RaymondMouthaan/prometheus-docker" \
+    maintainer="Raymond M Mouthaan <raymondmmouthaan@gmail.com>"
+
+COPY tmp/qemu-$QEMU_ARCH-static /usr/bin/qemu-$QEMU_ARCH-static
+
+# Copy ARCHs to ENVs to make them available at runtime
+ENV OS=$OS
+ENV ARCH=$ARCH
+ENV PROMETHEUS_VERSION=$PROMETHEUS_VERSION
+
+RUN set -xe \
+        && PROMETHEUS_DOWNLOAD_URL="https://github.com/prometheus/prometheus/releases/download/$PROMETHEUS_VERSION/prometheus-${PROMETHEUS_VERSION:1}.linux-${ARCH//[32]/}.tar.gz" \
+        && apk add --no-cache --virtual .fetch-deps \
+                curl \
+                ca-certificates \
+        && curl -fSL -o prometheus.tar.gz "$PROMETHEUS_DOWNLOAD_URL" \
+        && apk add --no-cache --virtual .build-deps \
+                tar \
+        && export PROMETHEUS_TOP="/tmp/install" \
+        && mkdir -vp $PROMETHEUS_TOP \
+        && tar -xzf prometheus.tar.gz -C $PROMETHEUS_TOP --strip-components=1 \
+        && rm prometheus.tar.gz \
+        && ( cd $PROMETHEUS_TOP \
+          && mkdir -p /etc/prometheus \
+          && mkdir -p /usr/share/prometheus \
+          && mv prometheus /bin/ \
+          && mv promtool /bin/ \
+          && mv prometheus.yml /etc/prometheus/prometheus.yml \
+          && mv consoles /usr/share/prometheus/ \
+          && mv console_libraries /usr/share/prometheus/ \
+          && mv NOTICE LICENSE /usr/share/prometheus/ \
+          && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ \
+        && rm -rf $PROMETHEUS_TOP \
+        && apk add --virtual .os-rundeps tzdata \
+        && chmod +x /bin/prometheus \
+        # removing fetch deps and build deps
+		&& apk --purge del .build-deps .fetch-deps \
+        && rm -rf /var/cache/apk/*
+
+WORKDIR /prometheus
+
+USER nobody
+
+VOLUME ["/prometheus"]
+
+# Prometheus will occupy these port:
+# - 9090 port
+EXPOSE 9090
+
+ENTRYPOINT [ "/bin/prometheus" ]
+CMD        [ "--config.file=/etc/prometheus/prometheus.yml", \
+             "--storage.tsdb.path=/prometheus", \
+             "--web.console.libraries=/usr/share/prometheus/console_libraries", \
+             "--web.console.templates=/usr/share/prometheus/consoles" ]
