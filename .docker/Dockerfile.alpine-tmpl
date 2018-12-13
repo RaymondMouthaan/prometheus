@@ -41,12 +41,12 @@ RUN set -xe \
         && apk add --no-cache --virtual .build-deps \
                 tar \
         && export PROMETHEUS_TOP="/tmp/install" \
-        && mkdir -vp $PROMETHEUS_TOP \
+        && mkdir -pv $PROMETHEUS_TOP \
         && tar -xzf prometheus.tar.gz -C $PROMETHEUS_TOP --strip-components=1 \
         && rm prometheus.tar.gz \
         && ( cd $PROMETHEUS_TOP \
-          && mkdir -p /etc/prometheus \
-          && mkdir -p /usr/share/prometheus \
+          && mkdir -pv /etc/prometheus \
+          && mkdir -pv /usr/share/prometheus \
           && mv prometheus /bin/ \
           && mv promtool /bin/ \
           && mv prometheus.yml /etc/prometheus/prometheus.yml \
@@ -54,8 +54,8 @@ RUN set -xe \
           && mv console_libraries /usr/share/prometheus/ \
           && mv NOTICE LICENSE /usr/share/prometheus/ \
           && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ \
-          && mkdir -p /prometheus \
-          && chown -R nobody:nogroup etc/prometheus /prometheus \
+          && mkdir -pv /prometheus \
+          && chown -R nobody:nogroup /etc/prometheus /prometheus \
           && ln -s /prometheus /etc/prometheus/data ) \
         && rm -rf $PROMETHEUS_TOP \
         && apk add --virtual .os-rundeps tzdata \
