@@ -53,7 +53,10 @@ RUN set -xe \
           && mv consoles /usr/share/prometheus/ \
           && mv console_libraries /usr/share/prometheus/ \
           && mv NOTICE LICENSE /usr/share/prometheus/ \
-          && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ ) \
+          && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ \
+          && mkdir -p /prometheus && \
+          && chown -R nobody:nogroup etc/prometheus /prometheus \
+          && ln -s /prometheus /etc/prometheus/data ) \
         && rm -rf $PROMETHEUS_TOP \
         && apk add --virtual .os-rundeps tzdata \
         && chmod +x /bin/prometheus \
@@ -61,7 +64,7 @@ RUN set -xe \
 		&& apk --purge del .build-deps .fetch-deps \
         && rm -rf /var/cache/apk/*
 
-WORKDIR /prometheus
+WORKDIR /etc/prometheus
 
 USER nobody
 
