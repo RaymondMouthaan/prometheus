@@ -45,6 +45,7 @@ docker_build() {
   echo "DOCKER BUILD: build from -> ${BUILD_FROM}."
   echo "DOCKER BUILD: os -> ${OS}."
   echo "DOCKER BUILD: arch - ${ARCH}."
+  echo "DOCKER BUILD: arch - ${ARCH_DWNL}."
   echo "DOCKER BUILD: qemu arch - ${QEMU_ARCH}."
   echo "DOCKER BUILD: prometheus version - ${PROMETHEUS_VERSION}."
   echo "DOCKER BUILD: docker file - ${DOCKER_FILE}."
@@ -55,7 +56,7 @@ docker_build() {
     --build-arg BUILD_VERSION=${BUILD_VERSION} \
     --build-arg BUILD_FROM=${BUILD_FROM} \
     --build-arg OS=${OS} \
-    --build-arg ARCH=${ARCH} \
+    --build-arg ARCH=${ARCH_DWNL} \
     --build-arg QEMU_ARCH=${QEMU_ARCH} \
     --build-arg PROMETHEUS_VERSION=${PROMETHEUS_VERSION} \
     --file ./.docker/${DOCKER_FILE} \
