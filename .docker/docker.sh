@@ -46,8 +46,7 @@ docker_build() {
   echo "DOCKER BUILD: os -> ${OS}."
   echo "DOCKER BUILD: arch - ${ARCH}."
   echo "DOCKER BUILD: qemu arch - ${QEMU_ARCH}."
-  echo "DOCKER BUILD: otp version - ${OTP_VERSION}."
-  echo "DOCKER BUILD: emqx version - ${EMQX_VERSION}."
+  echo "DOCKER BUILD: prometheus version - ${PROMETHEUS_VERSION}."
   echo "DOCKER BUILD: docker file - ${DOCKER_FILE}."
 
   docker build --no-cache \
@@ -58,8 +57,7 @@ docker_build() {
     --build-arg OS=${OS} \
     --build-arg ARCH=${ARCH} \
     --build-arg QEMU_ARCH=${QEMU_ARCH} \
-    --build-arg OTP_VERSION=${OTP_VERSION} \
-    --build-arg EMQX_VERSION=${EMQX_VERSION} \
+    --build-arg PROMETHEUS_VERSION=${PROMETHEUS_VERSION} \
     --file ./.docker/${DOCKER_FILE} \
     --tag ${TARGET}:build-${OS}-${ARCH} .
 }
