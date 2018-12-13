@@ -33,7 +33,7 @@ ENV ARCH=$ARCH
 ENV PROMETHEUS_VERSION=$PROMETHEUS_VERSION
 
 RUN set -xe \
-        && PROMETHEUS_DOWNLOAD_URL="https://github.com/prometheus/prometheus/releases/download/$PROMETHEUS_VERSION/prometheus-${PROMETHEUS_VERSION:1}.linux-${ARCH//[32]/}.tar.gz" \
+        && PROMETHEUS_DOWNLOAD_URL="https://github.com/prometheus/prometheus/releases/download/$PROMETHEUS_VERSION/prometheus-${PROMETHEUS_VERSION:1}.linux-$ARCH.tar.gz" \
         && apk add --no-cache --virtual .fetch-deps \
                 curl \
                 ca-certificates \
